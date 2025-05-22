@@ -3,31 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: '#2563eb',
-              danger: '#dc2626',
-              success: '#16a34a',
-            },
-          },
-        },
-      }
+      tailwind = window.tailwind || {}
+      tailwind.config = { darkMode: 'class' }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen">
+  <body class="bg-gray-100 min-h-screen" id="mainBody">
+    <!-- Header -->
+    <header class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow">
+      <div class="flex items-center gap-2">
+        <img src="ducima-logo.png" alt="Logo" class="h-8 w-8 rounded-full bg-white" />
+        <span class="font-bold text-xl">LeaveApp</span>
+      </div>
+      <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">Logout</button>
+    </header>
     <div class="max-w-6xl mx-auto mt-10 p-4">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Admin Dashboard</h2>
-        <button
-          onclick="logout()"
-          class="bg-danger hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+        <div class="flex flex-col items-end">
+          <span id="currentUserEmail" class="text-sm text-gray-600"></span>
+        </div>
       </div>
 
       <!-- User Management -->
@@ -36,12 +32,26 @@
           User Management
         </div>
         <div class="p-4 overflow-x-auto">
-          <table class="w-full table-auto">
+          <table
+            class="w-full table-auto rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800"
+          >
             <thead>
-              <tr class="bg-gray-200 text-sm">
-                <th class="px-3 py-2 text-left">Name</th>
-                <th class="px-3 py-2">Email</th>
-                <th class="px-3 py-2">Role</th>
+              <tr class="bg-gray-200 dark:bg-gray-700 text-sm">
+                <th
+                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                >
+                  Email
+                </th>
+                <th
+                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                >
+                  Role
+                </th>
               </tr>
             </thead>
             <tbody id="userList" class="text-sm"></tbody>
@@ -76,12 +86,31 @@
         </div>
       </section>
     </div>
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
 
     <script>
       const token = localStorage.getItem('token')
       if (!token) window.location = 'login.html'
 
+      function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast')
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        }'>${msg}</div>`
+        toast.style.display = 'block'
+        setTimeout(() => (toast.style.display = 'none'), 3000)
+      }
+
+      function showSpinner(show = true) {
+        document.getElementById('spinner').style.display = show
+          ? 'flex'
+          : 'none'
+      }
+
       async function fetchUsers() {
+        showSpinner(true)
         try {
           const res = await fetch('http://localhost:5000/api/admin/users', {
             headers: { Authorization: 'Bearer ' + token },
@@ -90,21 +119,30 @@
           document.getElementById('userList').innerHTML = users
             .map(
               (u) => `
-              <tr>
-                <td class="px-3 py-2">${u.name}</td>
-                <td class="px-3 py-2 text-center">${u.email}</td>
-                <td class="px-3 py-2 text-center">
-                  <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">${u.role}</span>
+              <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 transition">
+                <td class="px-4 py-3 text-gray-900 dark:text-gray-100">${
+                  u.name
+                }</td>
+                <td class="px-4 py-3 text-blue-700 dark:text-blue-300">${
+                  u.email ? u.email : '-'
+                }</td>
+                <td class="px-4 py-3">
+                  <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">${
+                    u.role
+                  }</span>
                 </td>
               </tr>`
             )
             .join('')
+          showSpinner(false)
         } catch (err) {
-          alert('Failed to fetch users.')
+          showSpinner(false)
+          showToast('Failed to fetch users.', 'error')
         }
       }
 
       async function fetchLeaveTypes() {
+        showSpinner(true)
         try {
           const res = await fetch(
             'http://localhost:5000/api/admin/leave-types',
@@ -120,14 +158,16 @@
                 <td class="px-3 py-2">${t.name}</td>
                 <td class="px-3 py-2 text-center">${t.defaultBalance}</td>
                 <td class="px-3 py-2 text-center">
-                  <button class="bg-yellow-500 text-white text-xs px-2 py-1 rounded mr-2" onclick="editLeaveType('${t._id}')">Edit</button>
-                  <button class="bg-danger text-white text-xs px-2 py-1 rounded" onclick="deleteLeaveType('${t._id}')">Delete</button>
+                  <button class="bg-yellow-500 text-white text-xs px-2 py-1 rounded mr-2" onclick="editLeaveType('${t._id}', this)">Edit</button>
+                  <button class="bg-danger text-white text-xs px-2 py-1 rounded" onclick="deleteLeaveType('${t._id}', this)">Delete</button>
                 </td>
               </tr>`
             )
             .join('')
+          showSpinner(false)
         } catch (err) {
-          alert('Failed to fetch leave types.')
+          showSpinner(false)
+          showToast('Failed to fetch leave types.', 'error')
         }
       }
 
@@ -140,6 +180,7 @@
         const type = prompt('Enter new leave type:')
         const balance = prompt('Enter default balance:')
         if (type && balance) {
+          showSpinner(true)
           fetch('http://localhost:5000/api/admin/leave-types', {
             method: 'POST',
             headers: {
@@ -148,15 +189,22 @@
             },
             body: JSON.stringify({ name: type, defaultBalance: balance }),
           })
-            .then(() => fetchLeaveTypes())
-            .catch(() => alert('Failed to add leave type.'))
+            .then(async (res) => {
+              const data = await res.json()
+              showToast(data.message, res.ok ? 'success' : 'error')
+              fetchLeaveTypes()
+            })
+            .catch(() => showToast('Failed to add leave type.', 'error'))
+            .finally(() => showSpinner(false))
         }
       }
 
-      function editLeaveType(id) {
+      function editLeaveType(id, btn) {
         const type = prompt('New leave type name:')
         const balance = prompt('New default balance:')
         if (type && balance) {
+          if (btn) btn.disabled = true
+          showSpinner(true)
           fetch(`http://localhost:5000/api/admin/leave-types/${id}`, {
             method: 'PUT',
             headers: {
@@ -165,25 +213,67 @@
             },
             body: JSON.stringify({ name: type, defaultBalance: balance }),
           })
-            .then(() => fetchLeaveTypes())
-            .catch(() => alert('Failed to update leave type.'))
+            .then(async (res) => {
+              const data = await res.json()
+              showToast(data.message, res.ok ? 'success' : 'error')
+              fetchLeaveTypes()
+            })
+            .catch(() => showToast('Failed to update leave type.', 'error'))
+            .finally(() => {
+              showSpinner(false)
+              if (btn) btn.disabled = false
+            })
         }
       }
 
-      function deleteLeaveType(id) {
+      function deleteLeaveType(id, btn) {
         if (confirm('Are you sure you want to delete this leave type?')) {
+          if (btn) btn.disabled = true
+          showSpinner(true)
           fetch(`http://localhost:5000/api/admin/leave-types/${id}`, {
             method: 'DELETE',
             headers: { Authorization: 'Bearer ' + token },
           })
-            .then(() => fetchLeaveTypes())
-            .catch(() => alert('Failed to delete leave type.'))
+            .then(async (res) => {
+              const data = await res.json()
+              showToast(data.message, res.ok ? 'success' : 'error')
+              fetchLeaveTypes()
+            })
+            .catch(() => showToast('Failed to delete leave type.', 'error'))
+            .finally(() => {
+              showSpinner(false)
+              if (btn) btn.disabled = false
+            })
         }
+      }
+
+      // Show current logged-in user's email
+      function parseJwt(token) {
+        try {
+          return JSON.parse(atob(token.split('.')[1]))
+        } catch (e) {
+          return null
+        }
+      }
+      const userInfo = parseJwt(token)
+      if (userInfo?.email) {
+        document.getElementById(
+          'currentUserEmail'
+        ).textContent = `Logged in as: ${userInfo.email}`
       }
 
       // Init
       fetchUsers()
       fetchLeaveTypes()
     </script>
+    <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+    <div
+      id="spinner"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
+    >
+      <div
+        class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+      ></div>
+    </div>
   </body>
 </html>

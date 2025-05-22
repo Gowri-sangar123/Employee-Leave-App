@@ -59,7 +59,10 @@
           Register
         </button>
       </form>
-      <p class="text-center mt-4 text-sm" id="message"></p>
+      <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+      <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
     </div>
 
     <script>
@@ -68,16 +71,27 @@
         pwd.type = pwd.type === 'password' ? 'text' : 'password'
       }
 
+      // Toast and spinner helpers
+      function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast')
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.style.display = 'block'
+        setTimeout(() => (toast.style.display = 'none'), 3000)
+      }
+      function showSpinner(show = true) {
+        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+      }
+
       document
         .getElementById('registerForm')
         .addEventListener('submit', async function (e) {
           e.preventDefault()
           const submitBtn = document.getElementById('submitBtn')
-          const messageEl = document.getElementById('message')
 
           // Disable the button
           submitBtn.disabled = true
           submitBtn.textContent = 'Registering...'
+          showSpinner(true)
 
           try {
             const res = await fetch('http://localhost:5000/api/auth/register', {
@@ -97,8 +111,7 @@
               localStorage.setItem('token', data.token)
               localStorage.setItem('role', data.role)
               localStorage.setItem('employeeName', data.name)
-              messageEl.textContent = 'Registration successful!'
-              messageEl.className = 'text-green-600 text-center'
+              showToast('Registration successful!', 'success')
               setTimeout(() => {
                 window.location.href =
                   data.role === 'manager'
@@ -108,15 +121,14 @@
                     : 'employee.html'
               }, 1000)
             } else {
-              messageEl.textContent = data.message || 'Registration failed'
-              messageEl.className = 'text-red-600 text-center'
+              showToast(data.message || 'Registration failed', 'error')
             }
           } catch (err) {
-            messageEl.textContent = 'Server error. Please try again.'
-            messageEl.className = 'text-red-600 text-center'
+            showToast('Server error. Please try again.', 'error')
           } finally {
             submitBtn.disabled = false
             submitBtn.textContent = 'Register'
+            showSpinner(false)
           }
         })
     </script>

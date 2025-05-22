@@ -3,9 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <title>Manager Dashboard</title>
+    <script>
+      tailwind = window.tailwind || {};
+      tailwind.config = { darkMode: 'class' };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen">
+  <body class="bg-gray-100 min-h-screen dark:bg-gray-900" id="mainBody">
     <!-- Header -->
     <header
       class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
@@ -37,43 +41,51 @@
       <main class="flex-1 p-8">
         <div class="max-w-5xl mx-auto mt-10 p-4">
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold">Manager Dashboard</h2>
+            <h2 class="text-2xl font-semibold dark:text-white">Manager Dashboard</h2>
           </div>
-          <div class="bg-white shadow-md rounded mb-6">
-            <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
-              Employee Leave Requests
+          <div class="bg-white dark:bg-gray-800 shadow-md rounded mb-6">
+            <div class="bg-blue-600 dark:bg-blue-900 text-white px-4 py-2 rounded-t flex justify-between items-center">
+              <span>Employee Leave Requests</span>
+              <span id="leaveCount" class="text-xs text-white/80"></span>
             </div>
             <div class="p-4">
               <div class="mb-4 flex flex-wrap gap-2">
                 <select
                   id="statusFilter"
-                  class="border border-gray-300 rounded px-2 py-1"
+                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
                 >
                   <option value="">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
                 </select>
+                <select
+                  id="sortFilter"
+                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
+                >
+                  <option value="desc">Newest First</option>
+                  <option value="asc">Oldest First</option>
+                </select>
                 <input
                   type="text"
                   id="employeeFilter"
                   placeholder="Employee Name"
-                  class="border border-gray-300 rounded px-2 py-1"
+                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
                 />
                 <button
                   onclick="fetchLeaves()"
-                  class="bg-blue-500 text-white px-3 py-1 rounded"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                 >
                   Filter
                 </button>
               </div>
               <ul id="leaveList" class="space-y-4"></ul>
-              <div class="flex justify-between mt-4">
-                <button id="prevPage" class="bg-gray-300 px-3 py-1 rounded">
+              <div id="paginationControls" class="flex justify-between mt-4">
+                <button id="prevPage" class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded">
                   Prev
                 </button>
-                <span id="pageInfo"></span>
-                <button id="nextPage" class="bg-gray-300 px-3 py-1 rounded">
+                <span id="pageInfo" class="dark:text-white"></span>
+                <button id="nextPage" class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded">
                   Next
                 </button>
               </div>
@@ -84,6 +96,10 @@
           id="flash"
           class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
         ></div>
+        <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+        <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
+          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
       </main>
     </div>
     <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
@@ -119,11 +135,28 @@
         setTimeout(() => (el.style.display = 'none'), 3000)
       }
 
+      function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast')
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.style.display = 'block'
+        setTimeout(() => (toast.style.display = 'none'), 3000)
+      }
+
+      function showSpinner(show = true) {
+        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+      }
+
       async function fetchLeaves() {
+        showSpinner(true)
         const status = document.getElementById('statusFilter').value
         const employee = document.getElementById('employeeFilter').value
+        const sort = document.getElementById('sortFilter').value
+        let url = `http://localhost:5000/api/manager/leave-requests?page=${page}&limit=${limit}`
+        if (status) url += `&status=${status}`
+        if (employee) url += `&employee=${employee}`
+        if (sort) url += `&sort=${sort}`
         const res = await fetch(
-          `http://localhost:5000/api/manager/leave-requests?status=${status}&employee=${employee}&page=${page}&limit=${limit}`,
+          url,
           { headers: { Authorization: 'Bearer ' + token } }
         )
         const data = await res.json()
@@ -137,7 +170,7 @@
                   ${l.from ? l.from.slice(0, 10) : ''} to ${
               l.to ? l.to.slice(0, 10) : ''
             } | 
-                  ${l.leaveType} | ${l.reason}
+                  ${(l.leaveType ? l.leaveType : '-')} | ${l.reason}
                   <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
                     l.status === 'approved'
                       ? 'bg-green-100 text-green-800'
@@ -156,10 +189,10 @@
                 <div class="mt-2 md:mt-0 flex gap-2">
                   <button onclick="updateStatus('${
                     l._id
-                  }', 'approved')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
+                  }', 'approved', this)" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
                   <button onclick="updateStatus('${
                     l._id
-                  }', 'rejected')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+                  }', 'rejected', this)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
                   <input type="text" id="comment-${
                     l._id
                   }" placeholder="Manager comment" class="border border-gray-300 rounded px-2 py-1 text-sm" style="width:120px;">
@@ -168,27 +201,42 @@
             `
           )
           .join('')
-        document.getElementById('pageInfo').textContent = `Page ${page} of ${
-          Math.ceil(total / limit) || 1
-        }`
+        const totalPages = Math.ceil(total / limit) || 1
+        document.getElementById('leaveCount').textContent = `Total: ${total}`
+        if (data.leaves.length === 0) {
+          document.getElementById('leaveList').innerHTML = '<li class="text-center text-gray-500 py-8">No leave requests found.</li>'
+        }
+        document.getElementById('paginationControls').style.display = 'flex'
+        document.getElementById('pageInfo').textContent = `Page ${page} of ${totalPages}`
+        document.getElementById('prevPage').disabled = page <= 1
+        document.getElementById('nextPage').disabled = page >= totalPages
+        showSpinner(false)
       }
 
-      async function updateStatus(id, status) {
+      async function updateStatus(id, status, btn) {
         const comment = document.getElementById('comment-' + id)?.value || ''
-        const res = await fetch(
-          'http://localhost:5000/api/manager/leave-requests/' + id,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + token,
-            },
-            body: JSON.stringify({ status, managerComment: comment }),
-          }
-        )
-        const data = await res.json()
-        showFlash(data.message, res.ok ? 'green' : 'red')
-        fetchLeaves()
+        if (btn) btn.disabled = true
+        showSpinner(true)
+        try {
+          const res = await fetch(
+            'http://localhost:5000/api/manager/leave-requests/' + id,
+            {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + token,
+              },
+              body: JSON.stringify({ status, managerComment: comment }),
+            }
+          )
+          const data = await res.json()
+          showToast(data.message, res.ok ? 'success' : 'error')
+          fetchLeaves()
+        } catch (err) {
+          showToast('Error updating leave request', 'error')
+        }
+        showSpinner(false)
+        if (btn) btn.disabled = false
       }
 
       document.getElementById('prevPage').onclick = () => {

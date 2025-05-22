@@ -45,10 +45,26 @@
       </form>
     </div>
 
+    <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+    <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
     <script>
       function togglePassword() {
         const pwd = document.getElementById('password')
         pwd.type = pwd.type === 'password' ? 'text' : 'password'
+      }
+
+      // Toast and spinner helpers
+      function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast')
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.style.display = 'block'
+        setTimeout(() => (toast.style.display = 'none'), 3000)
+      }
+      function showSpinner(show = true) {
+        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
       }
 
       document
@@ -56,7 +72,9 @@
         .addEventListener('submit', async (e) => {
           e.preventDefault()
           const form = e.target
-
+          const submitBtn = form.querySelector('button[type="submit"]')
+          submitBtn.disabled = true
+          showSpinner(true)
           try {
             const res = await fetch('http://localhost:5000/api/auth/login', {
               method: 'POST',
@@ -82,11 +100,13 @@
                 window.location = 'admin.html'
               }
             } else {
-              alert(data.message || 'Login failed')
+              showToast(data.message || 'Login failed', 'error')
             }
           } catch (err) {
-            alert('Server error. Please try again later.')
+            showToast('Server error. Please try again later.', 'error')
           }
+          showSpinner(false)
+          submitBtn.disabled = false
         })
     </script>
   </body>
