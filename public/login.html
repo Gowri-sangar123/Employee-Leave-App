@@ -14,15 +14,28 @@
           name="email"
           placeholder="Email"
           required
+          autofocus
           class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+
+        <div class="relative">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Password"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onclick="togglePassword()"
+            class="absolute right-3 top-2 text-sm text-blue-600"
+          >
+            Show
+          </button>
+        </div>
+
         <button
           type="submit"
           class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-medium"
@@ -31,34 +44,48 @@
         </button>
       </form>
     </div>
+
     <script>
+      function togglePassword() {
+        const pwd = document.getElementById('password')
+        pwd.type = pwd.type === 'password' ? 'text' : 'password'
+      }
+
       document
         .getElementById('loginForm')
         .addEventListener('submit', async (e) => {
           e.preventDefault()
           const form = e.target
-          const res = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: form.email.value,
-              password: form.password.value,
-            }),
-          })
-          const data = await res.json()
-          if (res.ok) {
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('role', data.role)
-            localStorage.setItem('employeeName', data.name)
-            if (data.role === 'employee') {
-              window.location = 'employee.html'
-            } else if (data.role === 'manager') {
-              window.location = 'manager.html'
-            } else if (data.role === 'admin') {
-              window.location = 'admin.html'
+
+          try {
+            const res = await fetch('http://localhost:5000/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: form.email.value,
+                password: form.password.value,
+              }),
+            })
+
+            const data = await res.json()
+
+            if (res.ok) {
+              localStorage.setItem('token', data.token)
+              localStorage.setItem('role', data.role)
+              localStorage.setItem('employeeName', data.name)
+
+              if (data.role === 'employee') {
+                window.location = 'employee.html'
+              } else if (data.role === 'manager') {
+                window.location = 'manager.html'
+              } else if (data.role === 'admin') {
+                window.location = 'admin.html'
+              }
+            } else {
+              alert(data.message || 'Login failed')
             }
-          } else {
-            alert(data.message || 'Login failed')
+          } catch (err) {
+            alert('Server error. Please try again later.')
           }
         })
     </script>

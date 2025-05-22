@@ -42,18 +42,11 @@
       </aside>
       <!-- Main Content -->
       <main class="flex-1 p-8">
-        <!-- ...your dashboard content here... -->
-
         <div class="max-w-4xl mx-auto mt-10 p-4">
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-semibold">Welcome, Employee</h2>
-            <button
-              onclick="logout()"
-              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-            >
-              Logout
-            </button>
           </div>
+
           <div class="bg-white shadow-md rounded mb-6">
             <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
               Apply for Leave
@@ -114,6 +107,7 @@
               </form>
             </div>
           </div>
+
           <div class="bg-white shadow-md rounded">
             <div class="bg-gray-700 text-white px-4 py-2 rounded-t">
               Your Leave Requests
@@ -123,15 +117,38 @@
             </div>
           </div>
         </div>
+
         <div
           id="flash"
           class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
         ></div>
       </main>
     </div>
+
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
+
     <script>
+      // Parse JWT to extract user info
+      function parseJwt(token) {
+        try {
+          return JSON.parse(atob(token.split('.')[1]))
+        } catch (e) {
+          return null
+        }
+      }
+
       const token = localStorage.getItem('token')
       if (!token) window.location = 'login.html'
+
+      const userInfo = parseJwt(token)
+      const employeeName = userInfo?.name || 'Unknown'
+
+      function logout() {
+        localStorage.clear()
+        window.location = 'login.html'
+      }
 
       function showFlash(msg, color = 'green') {
         const el = document.getElementById('flash')
@@ -142,20 +159,22 @@
       }
 
       async function fetchLeaves() {
-        const res = await fetch(
-          'http://localhost:5000/api/employee/leave-requests',
-          {
-            headers: { Authorization: 'Bearer ' + token },
-          }
-        )
-        const leaves = await res.json()
-        document.getElementById('leaveRequests').innerHTML = leaves
-          .map(
-            (l) =>
-              `<li class="bg-gray-100 p-3 rounded border border-gray-300">
-                <b>${l.from ? l.from.slice(0, 10) : ''} to ${
-                l.to ? l.to.slice(0, 10) : ''
-              }</b> - ${l.reason}
+        try {
+          const res = await fetch(
+            'http://localhost:5000/api/employee/leave-requests',
+            {
+              headers: { Authorization: 'Bearer ' + token },
+            }
+          )
+          if (!res.ok) throw new Error('Failed to fetch leave requests')
+          const leaves = await res.json()
+          document.getElementById('leaveRequests').innerHTML = leaves
+            .map(
+              (l) => `
+              <li class="bg-gray-100 p-3 rounded border border-gray-300">
+                <b>${l.from?.slice(0, 10)} to ${l.to?.slice(0, 10)}</b> - ${
+                l.reason
+              }
                 <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
                   l.status === 'approved'
                     ? 'bg-green-100 text-green-800'
@@ -165,17 +184,20 @@
                 }">
                   ${l.status.charAt(0).toUpperCase() + l.status.slice(1)}
                 </span>
-                <span class="ml-2 px-2 py-1 rounded text-xs bg-gray-200 text-gray-800">${
-                  l.leaveType
-                }</span>
+                <span class="ml-2 px-2 py-1 rounded text-xs bg-gray-200 text-gray-800">
+                  ${l.leaveType}
+                </span>
                 ${
                   l.managerComment
                     ? `<div class="text-xs text-gray-600 mt-1">Manager: ${l.managerComment}</div>`
                     : ''
                 }
               </li>`
-          )
-          .join('')
+            )
+            .join('')
+        } catch (err) {
+          showFlash(err.message, 'red')
+        }
       }
 
       document
@@ -183,40 +205,42 @@
         .addEventListener('submit', async (e) => {
           e.preventDefault()
           const form = e.target
-          const res = await fetch(
-            'http://localhost:5000/api/employee/leave-request',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + token,
-              },
-              body: JSON.stringify({
-                from: form.from.value,
-                to: form.to.value,
-                reason: form.reason.value,
-                leaveType: form.leaveType.value,
-                employeeName: localStorage.getItem('employeeName') || 'Unknown',
-              }),
+          try {
+            const res = await fetch(
+              'http://localhost:5000/api/employee/leave-request',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: 'Bearer ' + token,
+                },
+                body: JSON.stringify({
+                  from: form.from.value,
+                  to: form.to.value,
+                  reason: form.reason.value,
+                  leaveType: form.leaveType.value,
+                  employeeName: employeeName,
+                }),
+              }
+            )
+            const data = await res.json()
+            showFlash(data.message, res.ok ? 'green' : 'red')
+            if (res.ok) {
+              fetchLeaves()
+              form.reset()
             }
-          )
-          const data = await res.json()
-          showFlash(data.message, res.ok ? 'green' : 'red')
-          if (res.ok) {
-            fetchLeaves()
-            form.reset()
+          } catch (err) {
+            showFlash('Error submitting leave request', 'red')
           }
         })
 
-      function logout() {
-        localStorage.clear()
-        window.location = 'login.html'
-      }
+      // Set today's date as min value for date inputs
+      const today = new Date().toISOString().split('T')[0]
+      document.querySelector('[name="from"]').min = today
+      document.querySelector('[name="to"]').min = today
 
+      // Initial fetch
       fetchLeaves()
     </script>
-    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
-      &copy; 2025 LeaveApp. All rights reserved.
-    </footer>
   </body>
 </html>

@@ -16,6 +16,7 @@
           id="name"
           placeholder="Name"
           required
+          autofocus
           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
@@ -25,13 +26,22 @@
           required
           class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <input
-          type="password"
-          id="password"
-          placeholder="Password"
-          required
-          class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            required
+            class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onclick="togglePassword()"
+            class="absolute right-3 top-2 text-sm text-blue-600"
+          >
+            Show
+          </button>
+        </div>
         <select
           id="role"
           required
@@ -42,48 +52,71 @@
           <option value="admin">Admin</option>
         </select>
         <button
+          id="submitBtn"
           type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-medium"
         >
           Register
         </button>
       </form>
       <p class="text-center mt-4 text-sm" id="message"></p>
     </div>
+
     <script>
+      function togglePassword() {
+        const pwd = document.getElementById('password')
+        pwd.type = pwd.type === 'password' ? 'text' : 'password'
+      }
+
       document
         .getElementById('registerForm')
         .addEventListener('submit', async function (e) {
           e.preventDefault()
-          const res = await fetch('http://localhost:5000/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: document.getElementById('name').value,
-              email: document.getElementById('email').value,
-              password: document.getElementById('password').value,
-              role: document.getElementById('role').value,
-            }),
-          })
-          const data = await res.json()
+          const submitBtn = document.getElementById('submitBtn')
           const messageEl = document.getElementById('message')
-          if (data.token) {
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('role', data.role)
-            localStorage.setItem('employeeName', data.name)
-            messageEl.textContent = 'Registration successful!'
-            messageEl.className = 'text-green-600 text-center'
-            setTimeout(() => {
-              window.location.href =
-                data.role === 'manager'
-                  ? 'manager.html'
-                  : data.role === 'admin'
-                  ? 'admin.html'
-                  : 'employee.html'
-            }, 1000)
-          } else {
-            messageEl.textContent = data.message || 'Registration failed'
+
+          // Disable the button
+          submitBtn.disabled = true
+          submitBtn.textContent = 'Registering...'
+
+          try {
+            const res = await fetch('http://localhost:5000/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+              }),
+            })
+
+            const data = await res.json()
+
+            if (data.token) {
+              localStorage.setItem('token', data.token)
+              localStorage.setItem('role', data.role)
+              localStorage.setItem('employeeName', data.name)
+              messageEl.textContent = 'Registration successful!'
+              messageEl.className = 'text-green-600 text-center'
+              setTimeout(() => {
+                window.location.href =
+                  data.role === 'manager'
+                    ? 'manager.html'
+                    : data.role === 'admin'
+                    ? 'admin.html'
+                    : 'employee.html'
+              }, 1000)
+            } else {
+              messageEl.textContent = data.message || 'Registration failed'
+              messageEl.className = 'text-red-600 text-center'
+            }
+          } catch (err) {
+            messageEl.textContent = 'Server error. Please try again.'
             messageEl.className = 'text-red-600 text-center'
+          } finally {
+            submitBtn.disabled = false
+            submitBtn.textContent = 'Register'
           }
         })
     </script>
