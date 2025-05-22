@@ -6,61 +6,100 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
-    <div class="max-w-5xl mx-auto mt-10 p-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Manager Dashboard</h2>
-        <button
-          onclick="logout()"
-          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+    <header
+      class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
+    >
+      <div class="flex items-center gap-2">
+        <img
+          src="ducima-logo.png"
+          alt="Logo"
+          class="h-8 w-8 rounded-full bg-white"
+        />
+        <span class="font-bold text-xl">LeaveApp</span>
       </div>
-      <div class="bg-white shadow-md rounded mb-6">
-        <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
-          Employee Leave Requests
-        </div>
-        <div class="p-4">
-          <div class="mb-4 flex flex-wrap gap-2">
-            <select
-              id="statusFilter"
-              class="border border-gray-300 rounded px-2 py-1"
-            >
-              <option value="">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-            <input
-              type="text"
-              id="employeeFilter"
-              placeholder="Employee Name"
-              class="border border-gray-300 rounded px-2 py-1"
-            />
+      <button
+        onclick="logout()"
+        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+      >
+        Logout
+      </button>
+    </header>
+
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="w-56 bg-blue-900 text-white flex flex-col">
+        <nav class="flex-1 p-6 space-y-4">
+          <a
+            href="employee.html"
+            class="block px-4 py-2 rounded hover:bg-blue-700"
+            >Employee</a
+          >
+          <a
+            href="manager.html"
+            class="block px-4 py-2 rounded hover:bg-blue-700"
+            >Manager</a
+          >
+        </nav>
+      </aside>
+      <!-- Main Content -->
+      <main class="flex-1 p-8">
+        <div class="max-w-5xl mx-auto mt-10 p-4">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold">Manager Dashboard</h2>
             <button
-              onclick="fetchLeaves()"
-              class="bg-blue-500 text-white px-3 py-1 rounded"
+              onclick="logout()"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
             >
-              Filter
+              Logout
             </button>
           </div>
-          <ul id="leaveList" class="space-y-4"></ul>
-          <div class="flex justify-between mt-4">
-            <button id="prevPage" class="bg-gray-300 px-3 py-1 rounded">
-              Prev
-            </button>
-            <span id="pageInfo"></span>
-            <button id="nextPage" class="bg-gray-300 px-3 py-1 rounded">
-              Next
-            </button>
+          <div class="bg-white shadow-md rounded mb-6">
+            <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+              Employee Leave Requests
+            </div>
+            <div class="p-4">
+              <div class="mb-4 flex flex-wrap gap-2">
+                <select
+                  id="statusFilter"
+                  class="border border-gray-300 rounded px-2 py-1"
+                >
+                  <option value="">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+                <input
+                  type="text"
+                  id="employeeFilter"
+                  placeholder="Employee Name"
+                  class="border border-gray-300 rounded px-2 py-1"
+                />
+                <button
+                  onclick="fetchLeaves()"
+                  class="bg-blue-500 text-white px-3 py-1 rounded"
+                >
+                  Filter
+                </button>
+              </div>
+              <ul id="leaveList" class="space-y-4"></ul>
+              <div class="flex justify-between mt-4">
+                <button id="prevPage" class="bg-gray-300 px-3 py-1 rounded">
+                  Prev
+                </button>
+                <span id="pageInfo"></span>
+                <button id="nextPage" class="bg-gray-300 px-3 py-1 rounded">
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        <div
+          id="flash"
+          class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
+        ></div>
+      </main>
     </div>
-    <div
-      id="flash"
-      class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
-    ></div>
     <script>
       const token = localStorage.getItem('token')
       if (!token) window.location = 'login.html'
@@ -168,5 +207,8 @@
 
       fetchLeaves()
     </script>
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
   </body>
 </html>

@@ -5,85 +5,130 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
-    <div class="max-w-4xl mx-auto mt-10 p-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">Welcome, Employee</h2>
-        <button
-          onclick="logout()"
-          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+    <header
+      class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
+    >
+      <div class="flex items-center gap-2">
+        <img
+          src="ducima-logo.png"
+          alt="Logo"
+          class="h-8 w-8 rounded-full bg-white"
+        />
+        <span class="font-bold text-xl">LeaveApp</span>
       </div>
-      <div class="bg-white shadow-md rounded mb-6">
-        <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
-          Apply for Leave
-        </div>
-        <div class="p-4">
-          <form id="leaveForm" class="space-y-4">
-            <div>
-              <label for="from" class="block mb-1 font-medium">From Date</label>
-              <input
-                type="date"
-                name="from"
-                class="w-full border border-gray-300 p-2 rounded"
-                required
-              />
-            </div>
-            <div>
-              <label for="to" class="block mb-1 font-medium">To Date</label>
-              <input
-                type="date"
-                name="to"
-                class="w-full border border-gray-300 p-2 rounded"
-                required
-              />
-            </div>
-            <div>
-              <label for="leaveType" class="block mb-1 font-medium"
-                >Leave Type</label
-              >
-              <select
-                name="leaveType"
-                class="w-full border border-gray-300 p-2 rounded"
-                required
-              >
-                <option value="casual">Casual</option>
-                <option value="sick">Sick</option>
-                <option value="earned">Earned</option>
-              </select>
-            </div>
-            <div>
-              <label for="reason" class="block mb-1 font-medium">Reason</label>
-              <textarea
-                name="reason"
-                class="w-full border border-gray-300 p-2 rounded"
-                placeholder="Reason for leave"
-                required
-              ></textarea>
-            </div>
+      <button
+        onclick="logout()"
+        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+      >
+        Logout
+      </button>
+    </header>
+
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="w-56 bg-blue-900 text-white flex flex-col">
+        <nav class="flex-1 p-6 space-y-4">
+          <a
+            href="employee.html"
+            class="block px-4 py-2 rounded hover:bg-blue-700"
+            >Employee</a
+          >
+          <a
+            href="manager.html"
+            class="block px-4 py-2 rounded hover:bg-blue-700"
+            >Manager</a
+          >
+        </nav>
+      </aside>
+      <!-- Main Content -->
+      <main class="flex-1 p-8">
+        <!-- ...your dashboard content here... -->
+
+        <div class="max-w-4xl mx-auto mt-10 p-4">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold">Welcome, Employee</h2>
             <button
-              type="submit"
-              class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+              onclick="logout()"
+              class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
             >
-              Apply Leave
+              Logout
             </button>
-          </form>
+          </div>
+          <div class="bg-white shadow-md rounded mb-6">
+            <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+              Apply for Leave
+            </div>
+            <div class="p-4">
+              <form id="leaveForm" class="space-y-4">
+                <div>
+                  <label for="from" class="block mb-1 font-medium"
+                    >From Date</label
+                  >
+                  <input
+                    type="date"
+                    name="from"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="to" class="block mb-1 font-medium">To Date</label>
+                  <input
+                    type="date"
+                    name="to"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    required
+                  />
+                </div>
+                <div>
+                  <label for="leaveType" class="block mb-1 font-medium"
+                    >Leave Type</label
+                  >
+                  <select
+                    name="leaveType"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    required
+                  >
+                    <option value="casual">Casual</option>
+                    <option value="sick">Sick</option>
+                    <option value="earned">Earned</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="reason" class="block mb-1 font-medium"
+                    >Reason</label
+                  >
+                  <textarea
+                    name="reason"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    placeholder="Reason for leave"
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+                >
+                  Apply Leave
+                </button>
+              </form>
+            </div>
+          </div>
+          <div class="bg-white shadow-md rounded">
+            <div class="bg-gray-700 text-white px-4 py-2 rounded-t">
+              Your Leave Requests
+            </div>
+            <div class="p-4">
+              <ul id="leaveRequests" class="space-y-2"></ul>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="bg-white shadow-md rounded">
-        <div class="bg-gray-700 text-white px-4 py-2 rounded-t">
-          Your Leave Requests
-        </div>
-        <div class="p-4">
-          <ul id="leaveRequests" class="space-y-2"></ul>
-        </div>
-      </div>
+        <div
+          id="flash"
+          class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
+        ></div>
+      </main>
     </div>
-    <div
-      id="flash"
-      class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
-    ></div>
     <script>
       const token = localStorage.getItem('token')
       if (!token) window.location = 'login.html'
@@ -170,5 +215,8 @@
 
       fetchLeaves()
     </script>
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
   </body>
 </html>
