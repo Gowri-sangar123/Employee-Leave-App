@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/employee', require('./routes/employee'));
 app.use('/api/manager', require('./routes/manager'));
+app.use('/api/admin', require('./routes/admin'));
 app.use(express.static('public'));
 
 app.listen(5000, () => console.log('Server running on port 5000'));

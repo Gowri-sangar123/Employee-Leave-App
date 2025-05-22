@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Employee Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
     <div class="max-w-4xl mx-auto mt-10 p-4">
@@ -15,7 +15,6 @@
           Logout
         </button>
       </div>
-      <!-- Leave Application Form -->
       <div class="bg-white shadow-md rounded mb-6">
         <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
           Apply for Leave
@@ -41,6 +40,20 @@
               />
             </div>
             <div>
+              <label for="leaveType" class="block mb-1 font-medium"
+                >Leave Type</label
+              >
+              <select
+                name="leaveType"
+                class="w-full border border-gray-300 p-2 rounded"
+                required
+              >
+                <option value="casual">Casual</option>
+                <option value="sick">Sick</option>
+                <option value="earned">Earned</option>
+              </select>
+            </div>
+            <div>
               <label for="reason" class="block mb-1 font-medium">Reason</label>
               <textarea
                 name="reason"
@@ -58,7 +71,6 @@
           </form>
         </div>
       </div>
-      <!-- Leave Requests -->
       <div class="bg-white shadow-md rounded">
         <div class="bg-gray-700 text-white px-4 py-2 rounded-t">
           Your Leave Requests
@@ -68,10 +80,20 @@
         </div>
       </div>
     </div>
+    <div
+      id="flash"
+      class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
+    ></div>
     <script>
       const token = localStorage.getItem('token')
-      if (!token) {
-        window.location = 'login.html'
+      if (!token) window.location = 'login.html'
+
+      function showFlash(msg, color = 'green') {
+        const el = document.getElementById('flash')
+        el.textContent = msg
+        el.className = `fixed top-4 right-4 bg-${color}-600 text-white px-4 py-2 rounded shadow-lg`
+        el.style.display = 'block'
+        setTimeout(() => (el.style.display = 'none'), 3000)
       }
 
       async function fetchLeaves() {
@@ -89,9 +111,18 @@
                 <b>${l.from ? l.from.slice(0, 10) : ''} to ${
                 l.to ? l.to.slice(0, 10) : ''
               }</b> - ${l.reason}
-                <span class="bg-blue-200 text-blue-800 text-sm px-2 py-1 rounded float-right">
-                  Status: ${l.status}
+                <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                  l.status === 'approved'
+                    ? 'bg-green-100 text-green-800'
+                    : l.status === 'rejected'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800'
+                }">
+                  ${l.status.charAt(0).toUpperCase() + l.status.slice(1)}
                 </span>
+                <span class="ml-2 px-2 py-1 rounded text-xs bg-gray-200 text-gray-800">${
+                  l.leaveType
+                }</span>
                 ${
                   l.managerComment
                     ? `<div class="text-xs text-gray-600 mt-1">Manager: ${l.managerComment}</div>`
@@ -119,14 +150,17 @@
                 from: form.from.value,
                 to: form.to.value,
                 reason: form.reason.value,
+                leaveType: form.leaveType.value,
                 employeeName: localStorage.getItem('employeeName') || 'Unknown',
               }),
             }
           )
           const data = await res.json()
-          alert(data.message)
-          fetchLeaves()
-          form.reset()
+          showFlash(data.message, res.ok ? 'green' : 'red')
+          if (res.ok) {
+            fetchLeaves()
+            form.reset()
+          }
         })
 
       function logout() {

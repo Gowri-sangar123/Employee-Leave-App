@@ -3,54 +3,106 @@
   <head>
     <meta charset="UTF-8" />
     <title>Manager Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100">
-    <div class="max-w-4xl mx-auto py-10 px-4">
+  <body class="bg-gray-100 min-h-screen">
+    <div class="max-w-5xl mx-auto mt-10 p-4">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-blue-600">Welcome Manager</h2>
+        <h2 class="text-2xl font-semibold">Manager Dashboard</h2>
         <button
-          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
           onclick="logout()"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
         >
           Logout
         </button>
       </div>
-      <h4 class="text-xl font-semibold mb-4">Employee Leave Requests</h4>
-      <ul id="leaveList" class="space-y-4"></ul>
+      <div class="bg-white shadow-md rounded mb-6">
+        <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+          Employee Leave Requests
+        </div>
+        <div class="p-4">
+          <div class="mb-4 flex flex-wrap gap-2">
+            <select
+              id="statusFilter"
+              class="border border-gray-300 rounded px-2 py-1"
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <input
+              type="text"
+              id="employeeFilter"
+              placeholder="Employee Name"
+              class="border border-gray-300 rounded px-2 py-1"
+            />
+            <button
+              onclick="fetchLeaves()"
+              class="bg-blue-500 text-white px-3 py-1 rounded"
+            >
+              Filter
+            </button>
+          </div>
+          <ul id="leaveList" class="space-y-4"></ul>
+          <div class="flex justify-between mt-4">
+            <button id="prevPage" class="bg-gray-300 px-3 py-1 rounded">
+              Prev
+            </button>
+            <span id="pageInfo"></span>
+            <button id="nextPage" class="bg-gray-300 px-3 py-1 rounded">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+    <div
+      id="flash"
+      class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
+    ></div>
     <script>
       const token = localStorage.getItem('token')
-      if (!token) {
-        window.location = 'login.html'
+      if (!token) window.location = 'login.html'
+      let page = 1,
+        total = 0,
+        limit = 10
+
+      function showFlash(msg, color = 'green') {
+        const el = document.getElementById('flash')
+        el.textContent = msg
+        el.className = `fixed top-4 right-4 bg-${color}-600 text-white px-4 py-2 rounded shadow-lg`
+        el.style.display = 'block'
+        setTimeout(() => (el.style.display = 'none'), 3000)
       }
 
       async function fetchLeaves() {
+        const status = document.getElementById('statusFilter').value
+        const employee = document.getElementById('employeeFilter').value
         const res = await fetch(
-          'http://localhost:5000/api/manager/leave-requests',
-          {
-            headers: { Authorization: 'Bearer ' + token },
-          }
+          `http://localhost:5000/api/manager/leave-requests?status=${status}&employee=${employee}&page=${page}&limit=${limit}`,
+          { headers: { Authorization: 'Bearer ' + token } }
         )
-        const leaves = await res.json()
-        document.getElementById('leaveList').innerHTML = leaves
+        const data = await res.json()
+        total = data.total
+        document.getElementById('leaveList').innerHTML = data.leaves
           .map(
             (l) => `
-              <li class="bg-white p-4 rounded shadow flex flex-col md:flex-row md:justify-between md:items-center">
+              <li class="bg-gray-100 p-3 rounded border border-gray-300 flex flex-col md:flex-row md:justify-between md:items-center">
                 <div>
                   <span class="font-semibold">${l.employeeName}</span> | 
                   ${l.from ? l.from.slice(0, 10) : ''} to ${
               l.to ? l.to.slice(0, 10) : ''
             } | 
-                  ${l.reason}
-                  <span class="ml-2 px-2 py-1 rounded text-sm ${
+                  ${l.leaveType} | ${l.reason}
+                  <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
                     l.status === 'approved'
-                      ? 'bg-green-200 text-green-800'
+                      ? 'bg-green-100 text-green-800'
                       : l.status === 'rejected'
-                      ? 'bg-red-200 text-red-800'
-                      : 'bg-yellow-200 text-yellow-800'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
                   }">
-                    ${l.status}
+                    ${l.status.charAt(0).toUpperCase() + l.status.slice(1)}
                   </span>
                   ${
                     l.managerComment
@@ -73,19 +125,40 @@
             `
           )
           .join('')
+        document.getElementById('pageInfo').textContent = `Page ${page} of ${
+          Math.ceil(total / limit) || 1
+        }`
       }
 
       async function updateStatus(id, status) {
         const comment = document.getElementById('comment-' + id)?.value || ''
-        await fetch('http://localhost:5000/api/manager/leave-requests/' + id, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + token,
-          },
-          body: JSON.stringify({ status, managerComment: comment }),
-        })
+        const res = await fetch(
+          'http://localhost:5000/api/manager/leave-requests/' + id,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + token,
+            },
+            body: JSON.stringify({ status, managerComment: comment }),
+          }
+        )
+        const data = await res.json()
+        showFlash(data.message, res.ok ? 'green' : 'red')
         fetchLeaves()
+      }
+
+      document.getElementById('prevPage').onclick = () => {
+        if (page > 1) {
+          page--
+          fetchLeaves()
+        }
+      }
+      document.getElementById('nextPage').onclick = () => {
+        if (page * limit < total) {
+          page++
+          fetchLeaves()
+        }
       }
 
       function logout() {

@@ -6,7 +6,8 @@ const LeaveRequestSchema = new mongoose.Schema({
     from: { type: Date, required: true },
     to: { type: Date, required: true },
     reason: { type: String, required: true },
-    status: { type: String, default: 'pending' },
+    leaveType: { type: String, enum: ['casual', 'sick', 'earned'], required: true },
+    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     managerComment: { type: String, default: '' }
 });
 

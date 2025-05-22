@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <div class="max-w-5xl mx-auto mt-10 p-4">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold">Admin Dashboard</h2>
+        <button
+          onclick="logout()"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Logout
+        </button>
+      </div>
+      <div class="bg-white shadow-md rounded mb-6">
+        <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+          User Management
+        </div>
+        <div class="p-4">
+          <ul id="userList" class="space-y-2"></ul>
+        </div>
+      </div>
+      <div class="bg-white shadow-md rounded">
+        <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+          Leave Types
+        </div>
+        <div class="p-4">
+          <ul id="leaveTypeList" class="space-y-2"></ul>
+        </div>
+      </div>
+    </div>
+    <script>
+      const token = localStorage.getItem('token')
+      if (!token) window.location = 'login.html'
+
+      // Example: Fetch users and leave types (implement these endpoints in your admin route)
+      async function fetchUsers() {
+        const res = await fetch('http://localhost:5000/api/admin/users', {
+          headers: { Authorization: 'Bearer ' + token },
+        })
+        const users = await res.json()
+        document.getElementById('userList').innerHTML = users
+          .map((u) => `<li>${u.name} (${u.email}) - ${u.role}</li>`)
+          .join('')
+      }
+      async function fetchLeaveTypes() {
+        const res = await fetch('http://localhost:5000/api/admin/leave-types', {
+          headers: { Authorization: 'Bearer ' + token },
+        })
+        const types = await res.json()
+        document.getElementById('leaveTypeList').innerHTML = types
+          .map((t) => `<li>${t.name} (Default: ${t.defaultBalance})</li>`)
+          .join('')
+      }
+      function logout() {
+        localStorage.clear()
+        window.location = 'login.html'
+      }
+      fetchUsers()
+      fetchLeaveTypes()
+    </script>
+  </body>
+</html>
