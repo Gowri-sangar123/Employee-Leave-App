@@ -3,30 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <title>Register - Leave Management</title>
+    <script>
+      tailwind = window.tailwind || {}
+      tailwind.config = { darkMode: 'class' }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="w-full max-w-md bg-white p-6 rounded shadow-md">
-      <h3 class="text-2xl font-bold text-center text-blue-600 mb-6">
-        Register
-      </h3>
-      <form id="registerForm" class="space-y-4">
-        <input
-          type="text"
-          id="name"
-          placeholder="Name"
-          required
-          autofocus
-          class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header
+      class="bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <img
+          src="ducima-logo.png"
+          alt="Logo"
+          class="h-14 w-14 rounded-full bg-white border"
         />
-        <input
-          type="email"
-          id="email"
-          placeholder="Email"
-          required
-          class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <div class="relative">
+        <h1 class="text-xl font-semibold text-blue-800">Leave Management</h1>
+      </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center">
+      <div class="w-full max-w-md bg-white p-8 rounded shadow-md mt-10">
+        <h3 class="text-2xl font-bold text-center text-blue-600 mb-6">
+          Register
+        </h3>
+        <form id="registerForm" class="space-y-4">
+          <input
+            type="text"
+            id="name"
+            placeholder="Name"
+            required
+            class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            required
+            class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <input
             type="password"
             id="password"
@@ -34,101 +49,87 @@
             required
             class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            type="button"
-            onclick="togglePassword()"
-            class="absolute right-3 top-2 text-sm text-blue-600"
+          <select
+            id="role"
+            required
+            class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            Show
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold"
+          >
+            Register
           </button>
+        </form>
+        <p class="text-center mt-4 text-sm">
+          Already have an account?
+          <a href="login.html" class="text-blue-600 hover:underline">Login</a>
+        </p>
+        <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+        <div
+          id="spinner"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
+        >
+          <div
+            class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
-        <select
-          id="role"
-          required
-          class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="employee">Employee</option>
-          <option value="manager">Manager</option>
-          <option value="admin">Admin</option>
-        </select>
-        <button
-          id="submitBtn"
-          type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-medium"
-        >
-          Register
-        </button>
-      </form>
-      <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-      <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
-        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
-    </div>
-
+    </main>
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow w-full">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
     <script>
-      function togglePassword() {
-        const pwd = document.getElementById('password')
-        pwd.type = pwd.type === 'password' ? 'text' : 'password'
-      }
-
-      // Toast and spinner helpers
       function showToast(msg, type = 'success') {
         const toast = document.getElementById('toast')
-        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        }'>${msg}</div>`
         toast.style.display = 'block'
         setTimeout(() => (toast.style.display = 'none'), 3000)
       }
       function showSpinner(show = true) {
-        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+        document.getElementById('spinner').style.display = show
+          ? 'flex'
+          : 'none'
       }
 
       document
         .getElementById('registerForm')
         .addEventListener('submit', async function (e) {
           e.preventDefault()
-          const submitBtn = document.getElementById('submitBtn')
-
-          // Disable the button
-          submitBtn.disabled = true
-          submitBtn.textContent = 'Registering...'
           showSpinner(true)
-
-          try {
-            const res = await fetch('http://localhost:5000/api/auth/register', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value,
-                role: document.getElementById('role').value,
-              }),
-            })
-
-            const data = await res.json()
-
-            if (data.token) {
-              localStorage.setItem('token', data.token)
-              localStorage.setItem('role', data.role)
-              localStorage.setItem('employeeName', data.name)
-              showToast('Registration successful!', 'success')
-              setTimeout(() => {
-                window.location.href =
-                  data.role === 'manager'
-                    ? 'manager.html'
-                    : data.role === 'admin'
-                    ? 'admin.html'
-                    : 'employee.html'
-              }, 1000)
-            } else {
-              showToast(data.message || 'Registration failed', 'error')
-            }
-          } catch (err) {
-            showToast('Server error. Please try again.', 'error')
-          } finally {
-            submitBtn.disabled = false
-            submitBtn.textContent = 'Register'
-            showSpinner(false)
+          const res = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: document.getElementById('name').value,
+              email: document.getElementById('email').value,
+              password: document.getElementById('password').value,
+              role: document.getElementById('role').value,
+            }),
+          })
+          const data = await res.json()
+          showToast(
+            data.message ||
+              (res.ok ? 'Registration successful!' : 'Registration failed'),
+            res.ok ? 'success' : 'error'
+          )
+          showSpinner(false)
+          if (data.token) {
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('role', data.role)
+            localStorage.setItem('employeeName', data.name)
+            setTimeout(() => {
+              if (data.role === 'manager') window.location.href = 'manager.html'
+              else if (data.role === 'admin')
+                window.location.href = 'admin.html'
+              else window.location.href = 'employee.html'
+            }, 1000)
           }
         })
     </script>

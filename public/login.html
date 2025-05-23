@@ -2,111 +2,117 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Login</title>
+    <title>Login - Leave Management</title>
+    <script>
+      tailwind = window.tailwind || {}
+      tailwind.config = { darkMode: 'class' }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
-      <h2 class="text-center text-2xl font-semibold mb-5">Login</h2>
-      <form id="loginForm" class="space-y-4">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          autofocus
-          class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header
+      class="bg-white border-b border-gray-200 py-4 px-6 flex justify-between items-center shadow-sm"
+    >
+      <div class="flex items-center gap-3">
+        <img
+          src="ducima-logo.png"
+          alt="Logo"
+          class="h-14 w-14 rounded-full bg-white border"
         />
-
-        <div class="relative">
+        <h1 class="text-xl font-semibold text-blue-800">Leave Management</h1>
+      </div>
+    </header>
+    <main class="flex-1 flex items-center justify-center">
+      <div class="w-full max-w-md bg-white p-8 rounded shadow-md mt-10">
+        <h2 class="text-center text-2xl font-semibold mb-5 text-blue-700">
+          Login
+        </h2>
+        <form id="loginForm" class="space-y-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+            autofocus
+            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
           <input
             type="password"
             name="password"
-            id="password"
             placeholder="Password"
             required
             class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
-            type="button"
-            onclick="togglePassword()"
-            class="absolute right-3 top-2 text-sm text-blue-600"
+            type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold"
           >
-            Show
+            Login
           </button>
-        </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-medium"
+        </form>
+        <p class="text-center mt-4 text-sm">
+          Don't have an account?
+          <a href="register.html" class="text-blue-600 hover:underline"
+            >Register</a
+          >
+        </p>
+        <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+        <div
+          id="spinner"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
         >
-          Login
-        </button>
-      </form>
-    </div>
-
-    <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-    <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
-      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-
+          <div
+            class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          ></div>
+        </div>
+      </div>
+    </main>
+    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow w-full">
+      &copy; 2025 LeaveApp. All rights reserved.
+    </footer>
     <script>
-      function togglePassword() {
-        const pwd = document.getElementById('password')
-        pwd.type = pwd.type === 'password' ? 'text' : 'password'
-      }
-
-      // Toast and spinner helpers
       function showToast(msg, type = 'success') {
         const toast = document.getElementById('toast')
-        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        }'>${msg}</div>`
         toast.style.display = 'block'
         setTimeout(() => (toast.style.display = 'none'), 3000)
       }
       function showSpinner(show = true) {
-        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+        document.getElementById('spinner').style.display = show
+          ? 'flex'
+          : 'none'
       }
 
       document
         .getElementById('loginForm')
         .addEventListener('submit', async (e) => {
           e.preventDefault()
-          const form = e.target
-          const submitBtn = form.querySelector('button[type="submit"]')
-          submitBtn.disabled = true
           showSpinner(true)
-          try {
-            const res = await fetch('http://localhost:5000/api/auth/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                email: form.email.value,
-                password: form.password.value,
-              }),
-            })
-
-            const data = await res.json()
-
-            if (res.ok) {
-              localStorage.setItem('token', data.token)
-              localStorage.setItem('role', data.role)
-              localStorage.setItem('employeeName', data.name)
-
-              if (data.role === 'employee') {
-                window.location = 'employee.html'
-              } else if (data.role === 'manager') {
-                window.location = 'manager.html'
-              } else if (data.role === 'admin') {
-                window.location = 'admin.html'
-              }
-            } else {
-              showToast(data.message || 'Login failed', 'error')
-            }
-          } catch (err) {
-            showToast('Server error. Please try again later.', 'error')
-          }
+          const form = e.target
+          const res = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: form.email.value,
+              password: form.password.value,
+            }),
+          })
+          const data = await res.json()
+          showToast(
+            data.message || (res.ok ? 'Login successful!' : 'Login failed'),
+            res.ok ? 'success' : 'error'
+          )
           showSpinner(false)
-          submitBtn.disabled = false
+          if (res.ok && data.token) {
+            localStorage.setItem('token', data.token)
+            localStorage.setItem('role', data.role)
+            localStorage.setItem('employeeName', data.name)
+            if (data.role === 'employee') window.location = 'employee.html'
+            else if (data.role === 'manager') window.location = 'manager.html'
+            else if (data.role === 'admin') window.location = 'admin.html'
+          }
         })
     </script>
   </body>

@@ -3,26 +3,32 @@
   <head>
     <title>Employee Dashboard</title>
     <script>
-      tailwind = window.tailwind || {};
-      tailwind.config = { darkMode: 'class' };
+      tailwind = window.tailwind || {}
+      tailwind.config = { darkMode: 'class' }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen flex flex-col" id="mainBody">
+  <body
+    class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col"
+    id="mainBody"
+  >
+    <!-- Header -->
     <header
-      class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
+      class="bg-white border-b border-gray-200 py-4 px-8 flex justify-between items-center shadow-sm sticky top-0 z-10"
     >
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <img
           src="ducima-logo.png"
           alt="Logo"
-          class="h-8 w-8 rounded-full bg-white"
+          class="h-14 w-14 rounded-full bg-white border"
         />
-        <span class="font-bold text-xl">LeaveApp</span>
+        <span class="font-bold text-2xl text-blue-800 tracking-tight"
+          >LeaveApp</span
+        >
       </div>
       <button
         onclick="logout()"
-        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+        class="bg-red-600 hover:bg-red-700 px-5 py-2 rounded text-white font-semibold shadow transition"
       >
         Logout
       </button>
@@ -30,91 +36,163 @@
 
     <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
-      <aside class="w-56 bg-blue-900 text-white flex flex-col">
-        <nav class="flex-1 p-6 space-y-4">
+      <aside
+        class="w-64 bg-blue-900 text-white flex flex-col py-8 px-4 shadow-lg min-h-full"
+      >
+        <nav class="flex-1 space-y-4">
           <a
             href="employee.html"
-            class="block px-4 py-2 rounded hover:bg-blue-700"
+            class="block px-4 py-2 rounded-lg bg-blue-700 font-semibold shadow hover:bg-blue-600 transition"
             >Employee</a
           >
         </nav>
       </aside>
       <!-- Main Content -->
-      <main class="flex-1 p-8 flex flex-col min-h-0">
-        <div class="max-w-4xl w-full mx-auto flex-1 flex flex-col">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold" id="welcomeMsg">Welcome, Employee</h2>
+      <main class="flex-1 flex flex-col items-center py-10 px-2 md:px-8">
+        <div class="w-full max-w-3xl flex flex-col gap-8">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-3xl font-bold text-blue-900" id="welcomeMsg">
+              Welcome, Employee
+            </h2>
           </div>
 
-          <div class="bg-white shadow-md rounded mb-6">
-            <div class="bg-blue-600 text-white px-4 py-2 rounded-t">
+          <!-- Apply for Leave Card -->
+          <div class="bg-white rounded-2xl shadow-lg border border-blue-100">
+            <div
+              class="bg-blue-600 text-white px-6 py-3 rounded-t-2xl text-lg font-semibold tracking-wide"
+            >
               Apply for Leave
             </div>
-            <div class="p-4">
+            <div class="p-6">
               <form id="leaveForm" class="space-y-4">
                 <div>
                   <label class="block mb-1 font-medium">Leave Duration</label>
                   <div class="flex gap-4">
                     <label class="inline-flex items-center">
-                      <input type="radio" name="durationType" value="halfday" class="form-radio" checked />
+                      <input
+                        type="radio"
+                        name="durationType"
+                        value="halfday"
+                        class="form-radio"
+                        checked
+                      />
                       <span class="ml-2">Half Day</span>
                     </label>
                     <label class="inline-flex items-center">
-                      <input type="radio" name="durationType" value="oneday" class="form-radio" />
+                      <input
+                        type="radio"
+                        name="durationType"
+                        value="oneday"
+                        class="form-radio"
+                      />
                       <span class="ml-2">One Day</span>
                     </label>
                     <label class="inline-flex items-center">
-                      <input type="radio" name="durationType" value="multiday" class="form-radio" />
+                      <input
+                        type="radio"
+                        name="durationType"
+                        value="multiday"
+                        class="form-radio"
+                      />
                       <span class="ml-2">Multiple Days</span>
                     </label>
                   </div>
                 </div>
                 <div id="halfDayFields">
                   <label class="block mb-1 font-medium">Date</label>
-                  <input type="date" name="halfDayDate" class="w-full border border-gray-300 p-2 rounded" required />
+                  <input
+                    type="date"
+                    name="halfDayDate"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    required
+                  />
                   <div class="mt-2 flex gap-4">
                     <label class="inline-flex items-center">
-                      <input type="radio" name="halfType" value="first" class="form-radio" checked />
+                      <input
+                        type="radio"
+                        name="halfType"
+                        value="first"
+                        class="form-radio"
+                        checked
+                      />
                       <span class="ml-2">1st Half</span>
                     </label>
                     <label class="inline-flex items-center">
-                      <input type="radio" name="halfType" value="second" class="form-radio" />
+                      <input
+                        type="radio"
+                        name="halfType"
+                        value="second"
+                        class="form-radio"
+                      />
                       <span class="ml-2">2nd Half</span>
                     </label>
                   </div>
                 </div>
                 <div id="oneDayFields" class="hidden">
                   <label class="block mb-1 font-medium">Date</label>
-                  <input type="date" name="oneDayDate" class="w-full border border-gray-300 p-2 rounded" />
+                  <input
+                    type="date"
+                    name="oneDayDate"
+                    class="w-full border border-gray-300 p-2 rounded"
+                  />
                 </div>
                 <div id="multiDayFields" class="hidden">
                   <label class="block mb-1 font-medium">From Date</label>
-                  <input type="date" name="from" class="w-full border border-gray-300 p-2 rounded" />
+                  <input
+                    type="date"
+                    name="from"
+                    class="w-full border border-gray-300 p-2 rounded"
+                  />
                   <label class="block mb-1 font-medium mt-2">To Date</label>
-                  <input type="date" name="to" class="w-full border border-gray-300 p-2 rounded" />
+                  <input
+                    type="date"
+                    name="to"
+                    class="w-full border border-gray-300 p-2 rounded"
+                  />
                 </div>
                 <div>
-                  <label for="leaveType" class="block mb-1 font-medium">Leave Type</label>
-                  <select name="leaveType" class="w-full border border-gray-300 p-2 rounded" required>
+                  <label for="leaveType" class="block mb-1 font-medium"
+                    >Leave Type</label
+                  >
+                  <select
+                    name="leaveType"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    required
+                  >
                     <option value="casual">Casual</option>
                     <option value="sick">Sick</option>
                     <option value="earned">Earned</option>
                   </select>
                 </div>
                 <div>
-                  <label for="reason" class="block mb-1 font-medium">Reason</label>
-                  <textarea name="reason" class="w-full border border-gray-300 p-2 rounded" placeholder="Reason for leave" required></textarea>
+                  <label for="reason" class="block mb-1 font-medium"
+                    >Reason</label
+                  >
+                  <textarea
+                    name="reason"
+                    class="w-full border border-gray-300 p-2 rounded"
+                    placeholder="Reason for leave"
+                    required
+                  ></textarea>
                 </div>
-                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Apply Leave</button>
+                <button
+                  type="submit"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded font-semibold"
+                >
+                  Apply Leave
+                </button>
               </form>
             </div>
           </div>
 
-          <div class="bg-white shadow-md rounded">
-            <div class="bg-gray-700 text-white px-4 py-2 rounded-t">
+          <!-- Leave Requests Card -->
+          <div class="bg-white rounded-2xl shadow-lg border border-blue-100">
+            <div
+              class="bg-gray-700 text-white px-6 py-3 rounded-t-2xl text-lg font-semibold tracking-wide"
+            >
               Your Leave Requests
             </div>
-            <div class="p-4">
+            <div class="p-6">
               <ul id="leaveRequests" class="space-y-2"></ul>
             </div>
           </div>
@@ -125,13 +203,20 @@
           class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
         ></div>
         <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-        <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
-          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div
+          id="spinner"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
+        >
+          <div
+            class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
       </main>
     </div>
 
-    <footer class="bg-blue-800 text-white text-center py-3 mt-0 shadow w-full">
+    <footer
+      class="bg-blue-800 text-white text-center py-4 shadow w-full text-sm tracking-wide mt-0"
+    >
       &copy; 2025 LeaveApp. All rights reserved.
     </footer>
 
@@ -153,12 +238,14 @@
       const employeeEmail = userInfo?.email || ''
 
       // Set welcome message to username from email
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         if (employeeEmail) {
           const username = employeeEmail.split('@')[0]
-          document.getElementById('welcomeMsg').textContent = `Welcome, ${username}`
+          document.getElementById(
+            'welcomeMsg'
+          ).textContent = `Welcome, ${username}`
         }
-      });
+      })
 
       function logout() {
         localStorage.clear()
@@ -175,13 +262,17 @@
 
       function showToast(msg, type = 'success') {
         const toast = document.getElementById('toast')
-        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        }'>${msg}</div>`
         toast.style.display = 'block'
         setTimeout(() => (toast.style.display = 'none'), 3000)
       }
 
       function showSpinner(show = true) {
-        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+        document.getElementById('spinner').style.display = show
+          ? 'flex'
+          : 'none'
       }
 
       async function fetchLeaves() {
@@ -230,73 +321,90 @@
       }
 
       // --- Leave Duration Dynamic Form Logic ---
-      const durationRadios = document.querySelectorAll('input[name="durationType"]');
-      const halfDayFields = document.getElementById('halfDayFields');
-      const oneDayFields = document.getElementById('oneDayFields');
-      const multiDayFields = document.getElementById('multiDayFields');
+      const durationRadios = document.querySelectorAll(
+        'input[name="durationType"]'
+      )
+      const halfDayFields = document.getElementById('halfDayFields')
+      const oneDayFields = document.getElementById('oneDayFields')
+      const multiDayFields = document.getElementById('multiDayFields')
 
       function updateDurationFields() {
-        const selected = document.querySelector('input[name="durationType"]:checked').value;
-        halfDayFields.classList.toggle('hidden', selected !== 'halfday');
-        oneDayFields.classList.toggle('hidden', selected !== 'oneday');
-        multiDayFields.classList.toggle('hidden', selected !== 'multiday');
+        const selected = document.querySelector(
+          'input[name="durationType"]:checked'
+        ).value
+        halfDayFields.classList.toggle('hidden', selected !== 'halfday')
+        oneDayFields.classList.toggle('hidden', selected !== 'oneday')
+        multiDayFields.classList.toggle('hidden', selected !== 'multiday')
         // Set required attributes
-        halfDayFields.querySelector('input[name="halfDayDate"]').required = selected === 'halfday';
-        oneDayFields.querySelector('input[name="oneDayDate"]').required = selected === 'oneday';
-        multiDayFields.querySelector('input[name="from"]').required = selected === 'multiday';
-        multiDayFields.querySelector('input[name="to"]').required = selected === 'multiday';
+        halfDayFields.querySelector('input[name="halfDayDate"]').required =
+          selected === 'halfday'
+        oneDayFields.querySelector('input[name="oneDayDate"]').required =
+          selected === 'oneday'
+        multiDayFields.querySelector('input[name="from"]').required =
+          selected === 'multiday'
+        multiDayFields.querySelector('input[name="to"]').required =
+          selected === 'multiday'
       }
-      durationRadios.forEach(r => r.addEventListener('change', updateDurationFields));
-      updateDurationFields();
+      durationRadios.forEach((r) =>
+        r.addEventListener('change', updateDurationFields)
+      )
+      updateDurationFields()
 
       // --- Update form submission logic ---
-      document.getElementById('leaveForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        showSpinner(true);
-        let from, to, halfType = null;
-        const durationType = form.durationType.value;
-        if (durationType === 'halfday') {
-          from = to = form.halfDayDate.value;
-          halfType = form.halfType.value;
-        } else if (durationType === 'oneday') {
-          from = to = form.oneDayDate.value;
-        } else {
-          from = form.from.value;
-          to = form.to.value;
-        }
-        try {
-          const res = await fetch('http://localhost:5000/api/employee/leave-request', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: 'Bearer ' + token,
-            },
-            body: JSON.stringify({
-              from,
-              to,
-              reason: form.reason.value,
-              leaveType: form.leaveType.value,
-              employeeName: employeeName,
-              durationType,
-              halfType,
-            }),
-          });
-          const data = await res.json();
-          showToast(data.message, res.ok ? 'success' : 'error');
-          if (res.ok) {
-            fetchLeaves();
-            form.reset();
-            updateDurationFields();
+      document
+        .getElementById('leaveForm')
+        .addEventListener('submit', async (e) => {
+          e.preventDefault()
+          const form = e.target
+          const submitBtn = form.querySelector('button[type="submit"]')
+          submitBtn.disabled = true
+          showSpinner(true)
+          let from,
+            to,
+            halfType = null
+          const durationType = form.durationType.value
+          if (durationType === 'halfday') {
+            from = to = form.halfDayDate.value
+            halfType = form.halfType.value
+          } else if (durationType === 'oneday') {
+            from = to = form.oneDayDate.value
+          } else {
+            from = form.from.value
+            to = form.to.value
           }
-        } catch (err) {
-          showToast('Error submitting leave request', 'error');
-        }
-        showSpinner(false);
-        submitBtn.disabled = false;
-      });
+          try {
+            const res = await fetch(
+              'http://localhost:5000/api/employee/leave-request',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: 'Bearer ' + token,
+                },
+                body: JSON.stringify({
+                  from,
+                  to,
+                  reason: form.reason.value,
+                  leaveType: form.leaveType.value,
+                  employeeName: employeeName,
+                  durationType,
+                  halfType,
+                }),
+              }
+            )
+            const data = await res.json()
+            showToast(data.message, res.ok ? 'success' : 'error')
+            if (res.ok) {
+              fetchLeaves()
+              form.reset()
+              updateDurationFields()
+            }
+          } catch (err) {
+            showToast('Error submitting leave request', 'error')
+          }
+          showSpinner(false)
+          submitBtn.disabled = false
+        })
 
       // Set today's date as min value for date inputs
       const today = new Date().toISOString().split('T')[0]

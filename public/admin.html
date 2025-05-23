@@ -11,12 +11,23 @@
   </head>
   <body class="bg-gray-100 min-h-screen flex flex-col" id="mainBody">
     <!-- Header -->
-    <header class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow">
+    <header
+      class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
+    >
       <div class="flex items-center gap-2">
-        <img src="ducima-logo.png" alt="Logo" class="h-8 w-8 rounded-full bg-white" />
+        <img
+          src="ducima-logo.png"
+          alt="Logo"
+          class="h-14 w-14 rounded-full bg-white border"
+        />
         <span class="font-bold text-xl">LeaveApp</span>
       </div>
-      <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">Logout</button>
+      <button
+        onclick="logout()"
+        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+      >
+        Logout
+      </button>
     </header>
     <div class="flex flex-1 min-h-0">
       <!-- If you add a sidebar, place it here. Otherwise, just main content. -->
@@ -90,8 +101,13 @@
           </section>
         </div>
         <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-        <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
-          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div
+          id="spinner"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
+        >
+          <div
+            class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
       </main>
     </div>

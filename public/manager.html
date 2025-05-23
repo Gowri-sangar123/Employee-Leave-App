@@ -9,22 +9,27 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen flex flex-col" id="mainBody">
+  <body
+    class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex flex-col"
+    id="mainBody"
+  >
     <!-- Header -->
     <header
-      class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
+      class="bg-white border-b border-gray-200 py-4 px-8 flex justify-between items-center shadow-sm sticky top-0 z-10"
     >
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <img
           src="ducima-logo.png"
           alt="Logo"
-          class="h-8 w-8 rounded-full bg-white"
+          class="h-14 w-14 rounded-full bg-white border"
         />
-        <span class="font-bold text-xl">LeaveApp</span>
+        <span class="font-bold text-2xl text-blue-800 tracking-tight"
+          >LeaveApp</span
+        >
       </div>
       <button
         onclick="logout()"
-        class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+        class="bg-red-600 hover:bg-red-700 px-5 py-2 rounded text-white font-semibold shadow transition"
       >
         Logout
       </button>
@@ -32,70 +37,65 @@
 
     <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
-      <aside class="w-56 bg-blue-900 text-white flex flex-col">
-        <nav class="flex-1 p-6 space-y-4" id="sidebarLinks">
-          <!-- Sidebar links will be injected by JS -->
+      <aside
+        class="w-60 bg-blue-900 text-white flex flex-col py-8 px-4 shadow-lg min-h-full"
+      >
+        <nav class="flex-1 space-y-4">
+          <a
+            href="manager.html"
+            class="block px-4 py-2 rounded-lg bg-blue-700 font-semibold shadow hover:bg-blue-600 transition"
+            >Manager</a
+          >
         </nav>
       </aside>
       <!-- Main Content -->
-      <main class="flex-1 p-8 flex flex-col min-h-0">
-        <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col">
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold dark:text-black">
+      <main class="flex-1 flex flex-col items-center py-10 px-2 md:px-8">
+        <div class="w-full max-w-4xl flex flex-col gap-8">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-3xl font-bold text-blue-900 dark:text-black">
               Manager Dashboard
             </h2>
           </div>
-          <div class="bg-white dark:bg-gray-800 shadow-md rounded mb-6">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-blue-100 flex flex-col min-h-[500px]"
+          >
             <div
-              class="bg-blue-600 dark:bg-blue-900 text-white px-4 py-2 rounded-t flex justify-between items-center"
+              class="bg-blue-600 dark:bg-blue-900 text-white px-6 py-3 rounded-t-2xl flex justify-between items-center text-lg font-semibold tracking-wide"
             >
               <span>Employee Leave Requests</span>
               <span id="leaveCount" class="text-xs text-white/80"></span>
             </div>
-            <div class="p-4">
+            <div class="p-6 flex-1 flex flex-col">
               <div class="mb-4 flex flex-wrap gap-2">
                 <select
                   id="statusFilter"
-                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
+                  class="border border-gray-300 rounded px-2 py-1"
                 >
                   <option value="">All Status</option>
                   <option value="pending">Pending</option>
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
                 </select>
-                <select
-                  id="sortFilter"
-                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
-                >
-                  <option value="desc">Newest First</option>
-                  <option value="asc">Oldest First</option>
-                </select>
                 <input
                   type="text"
                   id="employeeFilter"
                   placeholder="Employee Name"
-                  class="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-white dark:bg-gray-900 dark:text-white"
+                  class="border border-gray-300 rounded px-2 py-1"
                 />
                 <button
                   onclick="fetchLeaves()"
-                  class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                  class="bg-blue-500 text-white px-3 py-1 rounded"
                 >
                   Filter
                 </button>
               </div>
-              <ul id="leaveList" class="space-y-4"></ul>
-              <div id="paginationControls" class="flex justify-between mt-4">
-                <button
-                  id="prevPage"
-                  class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded"
-                >
+              <ul id="leaveList" class="space-y-4 flex-1"></ul>
+              <div class="flex justify-between mt-4">
+                <button id="prevPage" class="bg-gray-300 px-3 py-1 rounded">
                   Prev
                 </button>
-                <span id="pageInfo" class="dark:text-white"></span>
-                <button
-                  id="nextPage"
-                  class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded"
-                >
+                <span id="pageInfo"></span>
+                <button id="nextPage" class="bg-gray-300 px-3 py-1 rounded">
                   Next
                 </button>
               </div>
@@ -117,30 +117,21 @@
         </div>
       </main>
     </div>
-    <footer class="bg-blue-800 text-white text-center py-3 mt-0 shadow w-full">
+
+    <footer
+      class="bg-blue-800 text-white text-center py-4 shadow w-full text-sm tracking-wide mt-0"
+    >
       &copy; 2025 LeaveApp. All rights reserved.
     </footer>
-    <script>
-      // Sidebar role-based links
-      const role = localStorage.getItem('role')
-      const sidebar = document.getElementById('sidebarLinks')
-      if (role === 'manager') {
-        sidebar.innerHTML = `
-          <a href="manager.html" class="block px-4 py-2 rounded bg-blue-700">Manager</a>
-        `
-      } else if (role === 'employee') {
-        sidebar.innerHTML = `
-          <a href="employee.html" class="block px-4 py-2 rounded bg-blue-700">Employee</a>
-        `
-      } else {
-        sidebar.innerHTML = ''
-      }
 
+    <script>
       const token = localStorage.getItem('token')
       if (!token) window.location = 'login.html'
-      let page = 1,
-        total = 0,
-        limit = 10
+
+      function logout() {
+        localStorage.clear()
+        window.location = 'login.html'
+      }
 
       function showFlash(msg, color = 'green') {
         const el = document.getElementById('flash')
@@ -165,78 +156,73 @@
           : 'none'
       }
 
+      let page = 1,
+        total = 0,
+        limit = 10
+
       async function fetchLeaves() {
         showSpinner(true)
         const status = document.getElementById('statusFilter').value
         const employee = document.getElementById('employeeFilter').value
-        const sort = document.getElementById('sortFilter').value
-        let url = `http://localhost:5000/api/manager/leave-requests?page=${page}&limit=${limit}`
-        if (status) url += `&status=${status}`
-        if (employee) url += `&employee=${employee}`
-        if (sort) url += `&sort=${sort}`
-        const res = await fetch(url, {
-          headers: { Authorization: 'Bearer ' + token },
-        })
-        const data = await res.json()
-        total = data.total
-        document.getElementById('leaveList').innerHTML = data.leaves
-          .map(
-            (l) => `
-              <li class="bg-gray-100 p-3 rounded border border-gray-300 flex flex-col md:flex-row md:justify-between md:items-center">
-                <div>
-                  <span class="font-semibold">${l.employeeName}</span> | 
-                  ${l.from ? l.from.slice(0, 10) : ''} to ${
-              l.to ? l.to.slice(0, 10) : ''
-            } | 
-                  ${l.leaveType ? l.leaveType : '-'} | ${l.reason}
-                  <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
-                    l.status === 'approved'
-                      ? 'bg-green-100 text-green-800'
-                      : l.status === 'rejected'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }">
-                    ${l.status.charAt(0).toUpperCase() + l.status.slice(1)}
-                  </span>
-                  ${
-                    l.managerComment
-                      ? `<div class="text-xs text-gray-600 mt-1">Manager: ${l.managerComment}</div>`
-                      : ''
-                  }
-                </div>
-                <div class="mt-2 md:mt-0 flex gap-2">
-                  <button onclick="updateStatus('${
-                    l._id
-                  }', 'approved', this)" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
-                  <button onclick="updateStatus('${
-                    l._id
-                  }', 'rejected', this)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
-                  <input type="text" id="comment-${
-                    l._id
-                  }" placeholder="Manager comment" class="border border-gray-300 rounded px-2 py-1 text-sm" style="width:120px;">
-                </div>
-              </li>
-            `
+        try {
+          const res = await fetch(
+            `http://localhost:5000/api/manager/leave-requests?status=${status}&employee=${employee}&page=${page}&limit=${limit}`,
+            { headers: { Authorization: 'Bearer ' + token } }
           )
-          .join('')
-        const totalPages = Math.ceil(total / limit) || 1
-        document.getElementById('leaveCount').textContent = `Total: ${total}`
-        if (data.leaves.length === 0) {
-          document.getElementById('leaveList').innerHTML =
-            '<li class="text-center text-gray-500 py-8">No leave requests found.</li>'
+          if (!res.ok) throw new Error('Failed to fetch leave requests')
+          const data = await res.json()
+          total = data.total
+          document.getElementById('leaveList').innerHTML = data.leaves
+            .map(
+              (l) => `
+                <li class="bg-gray-100 p-3 rounded border border-gray-300 flex flex-col md:flex-row md:justify-between md:items-center">
+                  <div>
+                    <span class="font-semibold">${l.employeeName}</span> | 
+                    ${l.from ? l.from.slice(0, 10) : ''} to ${
+                l.to ? l.to.slice(0, 10) : ''
+              } | 
+                  ${l.leaveType ? l.leaveType : '-'} | ${l.reason}
+                    <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
+                      l.status === 'approved'
+                        ? 'bg-green-100 text-green-800'
+                        : l.status === 'rejected'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }">
+                      ${l.status.charAt(0).toUpperCase() + l.status.slice(1)}
+                    </span>
+                    ${
+                      l.managerComment
+                        ? `<div class="text-xs text-gray-600 mt-1">Manager: ${l.managerComment}</div>`
+                        : ''
+                    }
+                  </div>
+                  <div class="mt-2 md:mt-0 flex gap-2">
+                    <button onclick="updateStatus('${
+                      l._id
+                    }', 'approved')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
+                    <button onclick="updateStatus('${
+                      l._id
+                    }', 'rejected')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+                    <input type="text" id="comment-${
+                      l._id
+                    }" placeholder="Manager comment" class="border border-gray-300 rounded px-2 py-1 text-sm" style="width:120px;">
+                  </div>
+                </li>
+              `
+            )
+            .join('')
+          document.getElementById('pageInfo').textContent = `Page ${page} of ${
+            Math.ceil(total / limit) || 1
+          }`
+        } catch (err) {
+          showToast(err.message, 'error')
         }
-        document.getElementById('paginationControls').style.display = 'flex'
-        document.getElementById(
-          'pageInfo'
-        ).textContent = `Page ${page} of ${totalPages}`
-        document.getElementById('prevPage').disabled = page <= 1
-        document.getElementById('nextPage').disabled = page >= totalPages
         showSpinner(false)
       }
 
-      async function updateStatus(id, status, btn) {
+      async function updateStatus(id, status) {
         const comment = document.getElementById('comment-' + id)?.value || ''
-        if (btn) btn.disabled = true
         showSpinner(true)
         try {
           const res = await fetch(
@@ -254,10 +240,9 @@
           showToast(data.message, res.ok ? 'success' : 'error')
           fetchLeaves()
         } catch (err) {
-          showToast('Error updating leave request', 'error')
+          showToast('Error updating status', 'error')
         }
         showSpinner(false)
-        if (btn) btn.disabled = false
       }
 
       document.getElementById('prevPage').onclick = () => {
@@ -273,11 +258,7 @@
         }
       }
 
-      function logout() {
-        localStorage.clear()
-        window.location = 'login.html'
-      }
-
+      // Initial fetch
       fetchLeaves()
     </script>
   </body>
