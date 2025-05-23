@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <title>Manager Dashboard</title>
     <script>
-      tailwind = window.tailwind || {};
-      tailwind.config = { darkMode: 'class' };
+      tailwind = window.tailwind || {}
+      tailwind.config = { darkMode: 'class' }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen dark:bg-gray-900" id="mainBody">
+  <body class="bg-gray-100 min-h-screen flex flex-col" id="mainBody">
     <!-- Header -->
     <header
       class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow"
@@ -30,7 +30,7 @@
       </button>
     </header>
 
-    <div class="flex min-h-screen">
+    <div class="flex flex-1 min-h-0">
       <!-- Sidebar -->
       <aside class="w-56 bg-blue-900 text-white flex flex-col">
         <nav class="flex-1 p-6 space-y-4" id="sidebarLinks">
@@ -38,13 +38,17 @@
         </nav>
       </aside>
       <!-- Main Content -->
-      <main class="flex-1 p-8">
-        <div class="max-w-5xl mx-auto mt-10 p-4">
+      <main class="flex-1 p-8 flex flex-col min-h-0">
+        <div class="max-w-5xl w-full mx-auto flex-1 flex flex-col">
           <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold dark:text-white">Manager Dashboard</h2>
+            <h2 class="text-2xl font-semibold dark:text-black">
+              Manager Dashboard
+            </h2>
           </div>
           <div class="bg-white dark:bg-gray-800 shadow-md rounded mb-6">
-            <div class="bg-blue-600 dark:bg-blue-900 text-white px-4 py-2 rounded-t flex justify-between items-center">
+            <div
+              class="bg-blue-600 dark:bg-blue-900 text-white px-4 py-2 rounded-t flex justify-between items-center"
+            >
               <span>Employee Leave Requests</span>
               <span id="leaveCount" class="text-xs text-white/80"></span>
             </div>
@@ -81,11 +85,17 @@
               </div>
               <ul id="leaveList" class="space-y-4"></ul>
               <div id="paginationControls" class="flex justify-between mt-4">
-                <button id="prevPage" class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded">
+                <button
+                  id="prevPage"
+                  class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded"
+                >
                   Prev
                 </button>
                 <span id="pageInfo" class="dark:text-white"></span>
-                <button id="nextPage" class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded">
+                <button
+                  id="nextPage"
+                  class="bg-gray-300 dark:bg-gray-700 dark:text-white px-3 py-1 rounded"
+                >
                   Next
                 </button>
               </div>
@@ -97,12 +107,17 @@
           class="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg hidden"
         ></div>
         <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-        <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
-          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div
+          id="spinner"
+          class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
+        >
+          <div
+            class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
+          ></div>
         </div>
       </main>
     </div>
-    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+    <footer class="bg-blue-800 text-white text-center py-3 mt-0 shadow w-full">
       &copy; 2025 LeaveApp. All rights reserved.
     </footer>
     <script>
@@ -137,13 +152,17 @@
 
       function showToast(msg, type = 'success') {
         const toast = document.getElementById('toast')
-        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}'>${msg}</div>`
+        toast.innerHTML = `<div class='px-4 py-2 rounded shadow text-white font-medium ${
+          type === 'success' ? 'bg-green-600' : 'bg-red-600'
+        }'>${msg}</div>`
         toast.style.display = 'block'
         setTimeout(() => (toast.style.display = 'none'), 3000)
       }
 
       function showSpinner(show = true) {
-        document.getElementById('spinner').style.display = show ? 'flex' : 'none'
+        document.getElementById('spinner').style.display = show
+          ? 'flex'
+          : 'none'
       }
 
       async function fetchLeaves() {
@@ -155,10 +174,9 @@
         if (status) url += `&status=${status}`
         if (employee) url += `&employee=${employee}`
         if (sort) url += `&sort=${sort}`
-        const res = await fetch(
-          url,
-          { headers: { Authorization: 'Bearer ' + token } }
-        )
+        const res = await fetch(url, {
+          headers: { Authorization: 'Bearer ' + token },
+        })
         const data = await res.json()
         total = data.total
         document.getElementById('leaveList').innerHTML = data.leaves
@@ -170,7 +188,7 @@
                   ${l.from ? l.from.slice(0, 10) : ''} to ${
               l.to ? l.to.slice(0, 10) : ''
             } | 
-                  ${(l.leaveType ? l.leaveType : '-')} | ${l.reason}
+                  ${l.leaveType ? l.leaveType : '-'} | ${l.reason}
                   <span class="ml-2 px-2 py-1 rounded text-xs font-semibold ${
                     l.status === 'approved'
                       ? 'bg-green-100 text-green-800'
@@ -204,10 +222,13 @@
         const totalPages = Math.ceil(total / limit) || 1
         document.getElementById('leaveCount').textContent = `Total: ${total}`
         if (data.leaves.length === 0) {
-          document.getElementById('leaveList').innerHTML = '<li class="text-center text-gray-500 py-8">No leave requests found.</li>'
+          document.getElementById('leaveList').innerHTML =
+            '<li class="text-center text-gray-500 py-8">No leave requests found.</li>'
         }
         document.getElementById('paginationControls').style.display = 'flex'
-        document.getElementById('pageInfo').textContent = `Page ${page} of ${totalPages}`
+        document.getElementById(
+          'pageInfo'
+        ).textContent = `Page ${page} of ${totalPages}`
         document.getElementById('prevPage').disabled = page <= 1
         document.getElementById('nextPage').disabled = page >= totalPages
         showSpinner(false)

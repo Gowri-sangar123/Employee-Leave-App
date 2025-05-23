@@ -9,7 +9,7 @@
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen" id="mainBody">
+  <body class="bg-gray-100 min-h-screen flex flex-col" id="mainBody">
     <!-- Header -->
     <header class="bg-blue-800 text-white flex justify-between items-center px-6 py-4 shadow">
       <div class="flex items-center gap-2">
@@ -18,75 +18,84 @@
       </div>
       <button onclick="logout()" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">Logout</button>
     </header>
-    <div class="max-w-6xl mx-auto mt-10 p-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Admin Dashboard</h2>
-        <div class="flex flex-col items-end">
-          <span id="currentUserEmail" class="text-sm text-gray-600"></span>
-        </div>
-      </div>
+    <div class="flex flex-1 min-h-0">
+      <!-- If you add a sidebar, place it here. Otherwise, just main content. -->
+      <main class="flex-1 p-8 flex flex-col min-h-0">
+        <div class="max-w-6xl w-full mx-auto flex-1 flex flex-col">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+            <div class="flex flex-col items-end">
+              <span id="currentUserEmail" class="text-sm text-gray-600"></span>
+            </div>
+          </div>
 
-      <!-- User Management -->
-      <section class="bg-white shadow-md rounded mb-6">
-        <div class="bg-primary text-white px-4 py-2 rounded-t">
-          User Management
-        </div>
-        <div class="p-4 overflow-x-auto">
-          <table
-            class="w-full table-auto rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800"
-          >
-            <thead>
-              <tr class="bg-gray-200 dark:bg-gray-700 text-sm">
-                <th
-                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
-                >
-                  Name
-                </th>
-                <th
-                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
-                >
-                  Email
-                </th>
-                <th
-                  class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
-                >
-                  Role
-                </th>
-              </tr>
-            </thead>
-            <tbody id="userList" class="text-sm"></tbody>
-          </table>
-        </div>
-      </section>
+          <!-- User Management -->
+          <section class="bg-white shadow-md rounded mb-6">
+            <div class="bg-primary text-white px-4 py-2 rounded-t">
+              User Management
+            </div>
+            <div class="p-4 overflow-x-auto">
+              <table
+                class="w-full table-auto rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800"
+              >
+                <thead>
+                  <tr class="bg-gray-200 dark:bg-gray-700 text-sm">
+                    <th
+                      class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                    >
+                      Email
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left font-semibold text-gray-700 dark:text-gray-200"
+                    >
+                      Role
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="userList" class="text-sm"></tbody>
+              </table>
+            </div>
+          </section>
 
-      <!-- Leave Types -->
-      <section class="bg-white shadow-md rounded">
-        <div
-          class="bg-primary text-white px-4 py-2 rounded-t flex justify-between items-center"
-        >
-          <span>Leave Types</span>
-          <button
-            onclick="addLeaveType()"
-            class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-sm"
-          >
-            + Add Leave Type
-          </button>
+          <!-- Leave Types -->
+          <section class="bg-white shadow-md rounded">
+            <div
+              class="bg-primary text-white px-4 py-2 rounded-t flex justify-between items-center"
+            >
+              <span>Leave Types</span>
+              <button
+                onclick="addLeaveType()"
+                class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-sm"
+              >
+                + Add Leave Type
+              </button>
+            </div>
+            <div class="p-4 overflow-x-auto">
+              <table class="w-full table-auto">
+                <thead>
+                  <tr class="bg-gray-200 text-sm">
+                    <th class="px-3 py-2 text-left">Leave Type</th>
+                    <th class="px-3 py-2">Default Balance</th>
+                    <th class="px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="leaveTypeList" class="text-sm"></tbody>
+              </table>
+            </div>
+          </section>
         </div>
-        <div class="p-4 overflow-x-auto">
-          <table class="w-full table-auto">
-            <thead>
-              <tr class="bg-gray-200 text-sm">
-                <th class="px-3 py-2 text-left">Leave Type</th>
-                <th class="px-3 py-2">Default Balance</th>
-                <th class="px-3 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="leaveTypeList" class="text-sm"></tbody>
-          </table>
+        <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
+        <div id="spinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden">
+          <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
-      </section>
+      </main>
     </div>
-    <footer class="bg-blue-800 text-white text-center py-3 mt-8 shadow">
+    <footer class="bg-blue-800 text-white text-center py-3 mt-0 shadow w-full">
       &copy; 2025 LeaveApp. All rights reserved.
     </footer>
 
@@ -266,14 +275,5 @@
       fetchUsers()
       fetchLeaveTypes()
     </script>
-    <div id="toast" class="fixed top-6 right-6 z-50 hidden"></div>
-    <div
-      id="spinner"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-40 hidden"
-    >
-      <div
-        class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"
-      ></div>
-    </div>
   </body>
 </html>
